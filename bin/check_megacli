@@ -1,0 +1,99 @@
+#!/usr/bin/env python
+
+# Example script using pymegacli which is suitable for invocation by nagios
+
+import argparse
+import os
+import sys
+
+import pymegacli
+
+
+OK = 0
+WARNING = 1
+CRITICAL = 2
+UNKNOWN = 3
+
+
+def main():
+    CHECKS = {'PD', 'LD', 'BBU'}
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        '--megacli-path',
+        default='/opt/MegaRAID/MegaCli/MegaCli64',
+        help='Path to MegaCli or MegaCli64 (default %(default)s)'
+    )
+    parser.add_argument(
+        '--check',
+        choices=CHECKS,
+        action='append',
+        help='Subsystems to check. If not passed, defaults to all'
+    )
+    args = parser.parse_args()
+
+    if os.geteuid() != 0:
+        parser.error('Must run as root!')
+
+    checks = {}
+    for check in CHECKS:
+        checks[check] = (not args.check or check in args.check)
+
+    connection = pymegacli.MegaCLIBase(args.megacli_path)
+
+    messages = {
+        OK: [],
+        WARNING: [],
+        CRITICAL: [],
+        UNKNOWN: []
+    }
+
+    def check_component(component):
+        if component.healthy:
+            messages[OK].append('%s is healthy' % component.identifier)
+        else:
+            for message in component.health_messages:
+                messages[CRITICAL].append('%s %s' % (
+                    component.identifier,
+                    message
+                ))
+
+    controllers = list(connection.controllers)
+    if not controllers:
+        messages[OK].append('No MegaRAID controllers found on this host')
+    else:
+        for controller in controllers:
+            if checks['PD']:
+                for disk in controller.PDs:
+                    check_component(disk)
+            if checks['LD']:
+                for logical_device in controller.LDs:
+                    check_component(disk)
+                    if 'WriteBack' not in logical_device['Current Cache Policy']:
+                        messages[WARNING].append('%s has cache policy %s, which does not include WriteBack' % (
+                            logical_device.identifier,
+                            logical_device['Current Cache Policy']
+                        ))
+            if checks['BBU']:
+                for bbu in controller.BBUs:
+                    check_component(bbu)
+                    if bbu['Learn Cycle Active']:
+                        messages[WARNING].append('%s is in learn cycle' % bbu.identifier)
+
+    if messages[CRITICAL]:
+        print 'CRITICAL: %s' % '; '.join(messages[CRITICAL])
+        return CRITICAL
+    elif messages[WARNING]:
+        print 'WARNING: %s' % '; '.join(messages[WARNING])
+        return WARNING
+    elif messages[UNKNOWN]:
+        print 'UNKNOWN: %s' % '; '.join(messages[UNKNOWN])
+        return UNKNOWN
+    else:
+        print 'OK: %s' % '; '.join(messages[OK])
+        return OK
+
+
+if __name__ == '__main__':
+    sys.exit(main())

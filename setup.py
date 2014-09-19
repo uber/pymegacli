@@ -21,5 +21,6 @@ setup(
         'Development Status :: 4 - Beta',
     ],
     packages=['pymegacli'],
+    scripts=['bin/check_megacli'],
     long_description=open('README.md', 'r').read().split('\n'),
 )
