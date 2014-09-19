@@ -48,6 +48,18 @@ def parse_bytes(s):
     return int(size * multiplier)
 
 
+def parse_time(s):
+    size, units = s.strip().split(' ')
+    size = int(size)
+    multiplier = {
+        'days': 86400,
+        'hours': 3600,
+        'minutes': 60,
+        'seconds': 1,
+    }.get(units, 1)
+    return int(size * multiplier)
+
+
 def once_per_block(line_parser):
     @functools.wraps(line_parser)
     def parse(line):
@@ -78,7 +90,7 @@ def ignore_rule(line_parser):
 
 
 class BlockParser(object):
-    def __init__(self, rules, default_constructor=lambda s: s):
+    def __init__(self, rules, default_constructor=lambda s: None):
         self.rules = rules
         self.default_constructor = default_constructor
 

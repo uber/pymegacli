@@ -9,6 +9,7 @@ from .parser import rule
 from .parser import yesnobool
 from .parser import oknokbool
 from .parser import parse_bytes
+from .parser import parse_time
 
 
 class MegaCLIBase(object):
@@ -147,6 +148,9 @@ class Disk(Component):
             if self.props.get(key, 0) != 0:
                 status[key] = self.props[key]
                 overall_status = False
+        if 'Online' not in self['Firmware state']:
+            status['Firmware state'] = self['Firmware state']
+            overall_status = False
         return status, overall_status
 
 
@@ -228,6 +232,19 @@ class MegaCLIController(object):
     def __init__(self, controller_number, parent):
         self.controller_number = controller_number
         self.parent = parent
+
+    @property
+    def patrol_read_status(self):
+        """patrol reads are the background disk re-reads that constantly happen to detect failed blocks."""
+        parser = BlockParser(rules=[
+            rule(colon_field('Patrol Read Mode')),
+            rule(colon_field('Patrol Read Execution Delay', parse_time)),
+            rule(colon_field('Number of iterations completed', int)),
+            rule(colon_field('Current State')),
+        ])
+        return parser.parse(
+            self.parent.run_command('-AdpPR', '-Info', '-a%d' % self.controller_number)
+        )[0]
 
     @property
     def PDs(self):
