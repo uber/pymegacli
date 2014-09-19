@@ -10,10 +10,11 @@ setup(
     author_email='jbrown@uber.com',
     url='http://github.com/uber/pymegacli',
     description='object-oriented API around the MegaCLI tool for administrating LSI RAID cards',
+    license='MIT',
     classifiers=[
         'Programming Language :: Python',
         'Operating System :: OS Independent',
-        'License :: OSI Approved :: GNU Lesser General Public License v2 (LGPLv2)',
+        'License :: OSI Approved :: MIT License',
         'Topic :: System :: Hardware',
         'Topic :: System :: Monitoring',
         'Topic :: System :: Systems Administration',
