@@ -23,5 +23,5 @@ setup(
     ],
     packages=['pymegacli'],
     scripts=['bin/check_megacli'],
-    long_description=open('README.md', 'r').read().split('\n'),
+    long_description=open('README.md', 'r').read(),
 )
