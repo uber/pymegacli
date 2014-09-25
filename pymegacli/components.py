@@ -117,7 +117,6 @@ class Disk(Component):
     ERROR_COUNT_KEYS = (
         'Media Error Count',
         'Predictive Failure Count',
-        'Other Error Count'
     )
     ERROR_BOOL_KEYS = ('Drive has flagged a S.M.A.R.T alert', )
     REQUIRED_FIELDS = ('Enclosure Device ID', 'Slot Number')
