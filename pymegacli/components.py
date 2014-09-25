@@ -92,7 +92,7 @@ class Component(object):
     @property
     def health_messages(self):
         for bad_key, bad_value in sorted(self.health_status[0].items()):
-            yield '%s was %d, expected 0' % (bad_key, bad_value)
+            yield '%s was unexpectedly %r' % (bad_key, bad_value)
 
     @property
     def healthy(self):
