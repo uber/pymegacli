@@ -11,7 +11,7 @@ IGNORE = object()
 
 
 def colon_field(expected_key, ty=str):
-    COLON_SEPARATED_RE = re.compile(r'\s*(?P<key>.*\w)\s*:\s*(?P<value>\w.*)$')
+    COLON_SEPARATED_RE = re.compile(r'\s*(?P<key>.*\w)\s*:\s*(?P<value>.*)$')
 
     def parser(line):
         md = COLON_SEPARATED_RE.match(line)

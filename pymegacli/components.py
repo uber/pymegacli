@@ -235,7 +235,8 @@ class MegaCLIController(object):
 
     @property
     def patrol_read_status(self):
-        """patrol reads are the background disk re-reads that constantly happen to detect failed blocks."""
+        """patrol reads are the background disk re-reads that constantly
+        happen to detect failed blocks."""
         parser = BlockParser(rules=[
             rule(colon_field('Patrol Read Mode')),
             rule(colon_field('Patrol Read Execution Delay', parse_time)),
