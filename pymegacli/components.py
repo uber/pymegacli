@@ -133,7 +133,15 @@ class Disk(Component):
     def __init__(self, enclosure_id, slot_number, parent, props=None):
         self.enclosure_id = enclosure_id
         self.slot_number = slot_number
+        self.thresholds = dict(
+            (k, 0)
+            for k
+            in self.ERROR_COUNT_KEYS
+        )
         super(Disk, self).__init__(parent, props)
+
+    def set_threshold(self, key, value):
+        self.thresholds[key] = value
 
     @property
     def identifier(self):
@@ -143,7 +151,11 @@ class Disk(Component):
     def health_status(self):
         status = {}
         overall_status = True
-        for key in self.ERROR_COUNT_KEYS + self.ERROR_BOOL_KEYS:
+        for key, value in self.thresholds.items():
+            if self.props.get(key, 0) > value:
+                status[key] = self.props[key]
+                overall_status = False
+        for key in self.ERROR_BOOL_KEYS:
             if self.props.get(key, 0) != 0:
                 status[key] = self.props[key]
                 overall_status = False
