@@ -13,13 +13,31 @@ from .parser import parse_time
 
 
 class MegaCLIBase(object):
-    def __init__(self, megacli_path):
+    def __init__(self, megacli_path, log=None):
         self.megacli_path = megacli_path
+        self.log = log
 
     def run_command(self, *args):
         exit_re = re.compile('^Exit Code: (.*)$')
+        cmd = [self.megacli_path] + list(args)
+        def quotey(input_str):
+            if ' ' not in input_str:
+                return input_str
+            if '"' in input_str and "'" in input_str:
+                raise Exception('could not quotey %s' % repr(input_str))
+            if '"' in input_str and "'" not in input_str:
+                return "'" + input_str + "'"
+            elif "'" in input_str and '"' not in input_str:
+                return '"' + input_str + '"'
+            else:
+                return "'" + input_str + "'"
+        if self.log:
+            try:
+                self.log.debug('executing: ' + ' '.join(map(quotey, cmd)))
+            except Exception:
+                self.log.debug('executing: ' + repr(cmd))
         p = subprocess.Popen(
-            [self.megacli_path] + list(args),
+            cmd,
             shell=False,
             stdout=subprocess.PIPE
         )
