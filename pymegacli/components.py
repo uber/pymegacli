@@ -1,3 +1,4 @@
+import pipes
 import subprocess
 import re
 
@@ -13,13 +14,17 @@ from .parser import parse_time
 
 
 class MegaCLIBase(object):
-    def __init__(self, megacli_path):
+    def __init__(self, megacli_path, log=None):
         self.megacli_path = megacli_path
+        self.log = log
 
     def run_command(self, *args):
         exit_re = re.compile('^Exit Code: (.*)$')
+        cmd = [self.megacli_path] + list(args)
+        if self.log:
+            self.log.debug('executing: ' + ' '.join(map(pipes.quote, cmd)))
         p = subprocess.Popen(
-            [self.megacli_path] + list(args),
+            cmd,
             shell=False,
             stdout=subprocess.PIPE
         )
