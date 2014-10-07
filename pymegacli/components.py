@@ -1,3 +1,4 @@
+import pipes
 import subprocess
 import re
 
