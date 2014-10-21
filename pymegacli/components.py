@@ -86,6 +86,9 @@ class Component(object):
     def __getitem__(self, key):
         return self.props[key]
 
+    def get(self, key, default=None):
+        return self.props.get(key, default)
+
     @property
     def identifier(self):
         return NotImplementedError()
@@ -234,12 +237,12 @@ class BBU(Component):
     def health_status(self):
         status = {}
         if self['Battery State'] != 'Optimal':
-            status['Battery State'] = self['State']
+            status['Battery State'] = self['Battery State']
         for key in self.BAD_KEYS:
-            if self[key]:
+            if self.get(key):
                 status[key] = self[key]
         for key in self.UNEXPECTED_KEYS:
-            if not self[key]:
+            if not self.get(key):
                 status[key] = 'not ok'
         return status, not bool(status)
 
