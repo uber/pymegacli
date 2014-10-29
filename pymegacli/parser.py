@@ -35,7 +35,7 @@ def oknokbool(s):
 
 
 def int_or_na(s):
-    if s.lower() == 'N/A':
+    if s.upper() == 'N/A':
         return -1
     else:
         return int(s)
