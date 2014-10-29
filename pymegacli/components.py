@@ -11,6 +11,7 @@ from .parser import yesnobool
 from .parser import oknokbool
 from .parser import parse_bytes
 from .parser import parse_time
+from .parser import int_or_na
 
 
 class MegaCLIBase(object):
@@ -130,7 +131,7 @@ class Disk(Component):
     REQUIRED_FIELDS = ('Enclosure Device ID', 'Slot Number')
 
     PARSER = BlockParser(rules=[
-        once_per_block(colon_field('Enclosure Device ID', int)),
+        once_per_block(colon_field('Enclosure Device ID', int_or_na)),
         rule(colon_field('Slot Number', int)),
         rule(colon_field('Other Error Count', int)),
         rule(colon_field('Predictive Failure Count', int)),

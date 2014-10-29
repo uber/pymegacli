@@ -34,6 +34,13 @@ def oknokbool(s):
     return s.lower() == 'ok'
 
 
+def int_or_na(s):
+    if s.lower() == 'N/A':
+        return -1
+    else:
+        return int(s)
+
+
 def parse_bytes(s):
     size, units = s.strip().split(' ')
     size = float(size)
