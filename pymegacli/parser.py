@@ -8,6 +8,7 @@ import re
 NewBlock = object()
 
 IGNORE = object()
+BAIL = object()
 
 
 def colon_field(expected_key, ty=str):
@@ -78,6 +79,15 @@ def once_per_block(line_parser):
     return parse
 
 
+def bail_on(substring):
+    def parse(line):
+        if substring in line:
+            return BAIL, None
+        else:
+            return None, None
+    return parse
+
+
 def rule(line_parser):
     @functools.wraps(line_parser)
     def parse(line):
@@ -107,6 +117,10 @@ class BlockParser(object):
         for line in lines:
             for a_rule in self.rules:
                 resp, create_new_block = a_rule(line)
+                if resp is BAIL:
+                    lines = []
+                    current_state = {}
+                    break
                 if current_state and create_new_block:
                     rv.append(current_state)
                     current_state = {}

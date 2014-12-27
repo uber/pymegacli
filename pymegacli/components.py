@@ -12,6 +12,7 @@ from .parser import oknokbool
 from .parser import parse_bytes
 from .parser import parse_time
 from .parser import int_or_na
+from .parser import bail_on
 
 
 class MegaCLIBase(object):
@@ -178,7 +179,8 @@ class LogicalDevice(Component):
     PARSER = BlockParser(rules=[
         once_per_block(colon_field('Virtual Drive', lambda s: int(s.split(' ')[0]))),
         rule(colon_field('Bad Blocks Exist', yesnobool)),
-        rule(colon_field('Size', parse_bytes))
+        rule(colon_field('Size', parse_bytes)),
+        bail_on('No Virtual Drive Configured'),
     ], default_constructor=colon_field(None, str))
 
     REQUIRED_FIELDS = ('Name', )
