@@ -4,14 +4,16 @@ import re
 
 from .parser import BlockParser
 from .parser import colon_field
-from .parser import once_per_block
 from .parser import ignore_rule
-from .parser import rule
-from .parser import yesnobool
+from .parser import int_or_na
+from .parser import not_found_rule
 from .parser import oknokbool
+from .parser import once_per_block
 from .parser import parse_bytes
 from .parser import parse_time
-from .parser import int_or_na
+from .parser import regexp_match
+from .parser import rule
+from .parser import yesnobool
 
 
 class MegaCLIBase(object):
@@ -211,6 +213,7 @@ class BBU(Component):
 
     PARSER = BlockParser(rules=[
         ignore_rule(colon_field('BBU status for Adapter')),
+        not_found_rule(regexp_match(r'\s*The required hardware component is not present.')),
         once_per_block(colon_field('BatteryType')),
         rule(colon_field('Voltage', oknokbool)),
         rule(colon_field('Temperature', oknokbool)),

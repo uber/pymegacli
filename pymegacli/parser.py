@@ -9,6 +9,10 @@ NewBlock = object()
 
 IGNORE = object()
 
+# return this sigil when the output contains a line
+# indicating that no object was found
+NOT_FOUND = object()
+
 
 def colon_field(expected_key, ty=str):
     COLON_SEPARATED_RE = re.compile(r'\s*(?P<key>.*\w)\s*:\s*(?P<value>.*)$')
@@ -22,6 +26,16 @@ def colon_field(expected_key, ty=str):
             return key, ty(value)
         else:
             return None
+
+    return parser
+
+
+def regexp_match(regex):
+    if not hasattr(regex, 'match'):
+        regex = re.compile(regex)
+
+    def parser(line):
+        return regex.match(line)
 
     return parser
 
@@ -96,6 +110,17 @@ def ignore_rule(line_parser):
     return parse
 
 
+def not_found_rule(line_parser):
+    @functools.wraps(line_parser)
+    def parse(line):
+        resp = line_parser(line)
+        if resp is not None:
+            return NOT_FOUND, None
+        else:
+            return resp, None
+    return parse
+
+
 class BlockParser(object):
     def __init__(self, rules, default_constructor=lambda s: None):
         self.rules = rules
@@ -110,6 +135,8 @@ class BlockParser(object):
                 if current_state and create_new_block:
                     rv.append(current_state)
                     current_state = {}
+                if resp is NOT_FOUND:
+                    return []
                 if resp is IGNORE:
                     break
                 if resp is not None:
