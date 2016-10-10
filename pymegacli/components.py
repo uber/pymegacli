@@ -171,7 +171,8 @@ class Disk(Component):
             if self.props.get(key, 0) != 0:
                 status[key] = self.props[key]
                 overall_status = False
-        if 'Online' not in self['Firmware state']:
+        # need to allow for JBOD as well
+        if 'Online' not in self['Firmware state'] and 'JBOD' not in self['Firmware state']:
             status['Firmware state'] = self['Firmware state']
             overall_status = False
         return status, overall_status

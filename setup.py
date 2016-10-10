@@ -5,7 +5,7 @@ except ImportError:
 
 setup(
     name='pymegacli',
-    version='0.1.5.5',
+    version='0.1.5.6',
     author='James Brown',
     author_email='jbrown@uber.com',
     url='http://github.com/uber/pymegacli',
