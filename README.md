@@ -1,10 +1,9 @@
-If you have any LSI RAID cards in your infrastructure which predate the acquisition
-of 3ware, you are undoubtedly familiar with MegaCli64, the horrible program which LSI
-provides for administrating these cards. Its lack of user-friendliness is legendary. Some
-egregious examples:
+MegaCli64 is the command line utility provided by LSI for configuring raid
+cards.  While all of the functionality is there, the interface can be
+challenging to deal with.  Here are some examples:
 
  - case sensitivity + inconsistent case (example: `/opt/MegaRAID/MegaCli/MegaCli64 -LDInfo -Lall -aALL`)
- - wildly inconsistent, hard-to-parse output (`BBU GasGauge Status: 0x0128`)
+ - inconsistent, hard-to-parse output (`BBU GasGauge Status: 0x0128`)
  - misleading summary information (components like BBUs will often simultaneously report `State: Optimal` and `Pack is about to fail & should be replaced`, which seems like they should never occur at the same time)
 
 This library seeks to wrap MegaCli and MegaCli64 and provide an object-oriented interface
